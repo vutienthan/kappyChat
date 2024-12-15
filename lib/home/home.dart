@@ -10,55 +10,163 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  User? user; // Lưu trữ thông tin người dùng
+  User? user;
+  String currentMenu = "Home"; // Mục menu hiện tại
 
   @override
   void initState() {
     super.initState();
-    // Lấy thông tin người dùng hiện tại
-    user = FirebaseAuth.instance.currentUser;
+    user = FirebaseAuth.instance.currentUser; // Lấy thông tin người dùng
+  }
+
+  // Danh sách các nội dung ứng với các mục menu
+  Widget _buildContent() {
+    switch (currentMenu) {
+      case "Home":
+        return _homeContent();
+      case "Friends":
+        return _friendsContent();
+      case "Community":
+        return _communityContent();
+      default:
+        return const Center(child: Text("Ошибка: Неизвестное меню!"));
+    }
+  }
+
+  Widget _homeContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            "Добро пожаловать в приложение!", // Chào mừng người dùng
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF333333),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            "Здравствуйте, ${user?.displayName ?? 'Пользователь CapyBara'}!",
+            style: const TextStyle(fontSize: 18, color: Color(0xFF555555)),
+          ),
+          Text(
+            "Email: ${user?.email ?? 'Не указано'}",
+            style: const TextStyle(fontSize: 16, color: Color(0xFF555555)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _friendsContent() {
+    return const Center(
+      child: Text(
+        "Ваши друзья появятся здесь.", // "Bạn bè của bạn sẽ xuất hiện ở đây."
+        style: TextStyle(fontSize: 18, color: Color(0xFF333333)),
+      ),
+    );
+  }
+
+  Widget _communityContent() {
+    return const Center(
+      child: Text(
+        "Сообщество: Добро пожаловать в открытую сеть!", // "Cộng đồng: Chào mừng đến với mạng xã hội mở!"
+        style: TextStyle(fontSize: 18, color: Color(0xFF333333)),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Nếu người dùng chưa đăng nhập, điều hướng đến trang đăng nhập
     if (user == null) {
       return const LoginPage();
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Главная страница"), // Tiêu đề "Trang chính"
-        backgroundColor: const Color(0xFFA67C52), // Màu capybara (nâu sáng)
+        title: Text(currentMenu), // Tiêu đề thay đổi theo menu
+        backgroundColor: const Color(0xFFA67C52),
         centerTitle: true,
       ),
       drawer: Drawer(
         child: Container(
-          color: Colors.white, // Nền trắng
+          color: const Color(0xFFF8F4E3), // Màu nền Drawer giống Discord
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color(0xFFA67C52), // Màu capybara (nâu sáng)
+              DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Color(0xFFA67C52), // Header màu capybara
                 ),
-                child: Text(
-                  "Ваш аккаунт", // "Tài khoản của bạn"
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.person, size: 40, color: Color(0xFFA67C52)),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      user?.displayName ?? "Пользователь CapyBara", // Tên người dùng
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      user?.email ?? "Email: Не указано", // Email người dùng
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               ListTile(
+                leading: const Icon(Icons.home, color: Color(0xFFA67C52)),
+                title: const Text("Главная", style: TextStyle(color: Colors.black)),
+                onTap: () {
+                  setState(() {
+                    currentMenu = "Home";
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.group, color: Color(0xFFA67C52)),
+                title: const Text("Друзья", style: TextStyle(color: Colors.black)),
+                onTap: () {
+                  setState(() {
+                    currentMenu = "Friends";
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.public, color: Color(0xFFA67C52)),
+                title: const Text("Сообщество", style: TextStyle(color: Colors.black)),
+                onTap: () {
+                  setState(() {
+                    currentMenu = "Community";
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              const Divider(),
+              ListTile(
                 leading: const Icon(Icons.exit_to_app, color: Color(0xFFA67C52)),
-                title: const Text("Выйти"), // "Đăng xuất" bằng tiếng Nga
+                title: const Text("Выйти", style: TextStyle(color: Colors.black)),
                 onTap: () async {
                   await FirebaseAuth.instance.signOut();
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const LoginPage()),
-                        (route) => false,
+                    (route) => false,
                   );
                 },
               ),
@@ -66,57 +174,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "Добро пожаловать в приложение!", // "Chào mừng bạn đến với ứng dụng!"
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF333333),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            // Hiển thị tên và email người dùng
-            Text(
-              "Добро пожаловать, ${user?.displayName ?? 'Пользователь CapyBara'}!", // "Chào mừng bạn, tên người dùng!"
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF333333),
-              ),
-            ),
-            Text(
-              "Email: ${user?.email ?? 'Не указано'}", // "Email: email của người dùng"
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color(0xFF333333),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                      (route) => false,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFA67C52), // Màu capybara (nâu sáng)
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-              ),
-              child: const Text(
-                "Выйти", // "Đăng xuất" bằng tiếng Nga
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: _buildContent(),
     );
   }
 }
