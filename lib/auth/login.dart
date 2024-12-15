@@ -14,18 +14,18 @@ class _LoginPageState extends State<LoginPage> {
   String? password;
   bool isPasswordVisible = false; // Biến để quản lý trạng thái hiện/ẩn mật khẩu
 
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Войти"),
-        backgroundColor: const Color(0xFFFF2442), // Цвет заголовка
+        title: const Text("Войти"), // "Đăng nhập" => "Войти"
+        backgroundColor: const Color(0xFFFF2442), // Màu đỏ
         centerTitle: true,
       ),
       body: Container(
-        color: Colors.white, // Белый фон
+        color: Colors.white, // Nền trắng
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
@@ -33,11 +33,11 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const Center(
                 child: Text(
-                  "Добро пожаловать!",
+                  "Добро пожаловать!", // "Chào mừng bạn!" => "Добро пожаловать!"
                   style: TextStyle(
                     fontSize: 28.0,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFFF2442),
+                    color: Color(0xFFFF2442), // Màu đỏ
                   ),
                 ),
               ),
@@ -46,10 +46,13 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.email, color: Color(0xFFFF2442)),
                   border: OutlineInputBorder(),
-                  labelText: "Электронная почта",
-                  hintText: "Введите ваш email",
+                  labelText: "Электронная почта", // "Email" => "Электронная почта"
+                  hintText: "Введите ваш email", // "Nhập email của bạn" => "Введите ваш email"
                 ),
-                validator: ValidationBuilder().email().maxLength(50).build(),
+                validator: ValidationBuilder()
+                    .email("Неверный формат электронной почты") // Thông báo lỗi email không hợp lệ
+                    .maxLength(50, "Максимум 50 символов") // Email tối đa 50 ký tự
+                    .build(),
                 onChanged: (value) {
                   email = value;
                 },
@@ -60,8 +63,8 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock, color: Color(0xFFFF2442)),
                   border: const OutlineInputBorder(),
-                  labelText: "Пароль",
-                  hintText: "Введите ваш пароль",
+                  labelText: "Пароль", // "Mật khẩu" => "Пароль"
+                  hintText: "Введите ваш пароль", // "Nhập mật khẩu của bạn" => "Введите ваш пароль"
                   suffixIcon: IconButton(
                     icon: Icon(
                       isPasswordVisible
@@ -76,7 +79,10 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                 ),
-                validator: ValidationBuilder().minLength(8).maxLength(30).build(),
+                validator: ValidationBuilder()
+                    .minLength(8, "Минимум 8 символов") // Mật khẩu tối thiểu 8 ký tự
+                    .maxLength(30, "Максимум 30 символов") // Mật khẩu tối đa 30 ký tự
+                    .build(),
                 onChanged: (value) {
                   password = value;
                 },
@@ -93,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       // Hiển thị thông báo thành công
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Вы успешно вошли!")),
+                        const SnackBar(content: Text("Вы успешно вошли!")), // "Bạn đã đăng nhập thành công!" => "Вы успешно вошли!"
                       );
 
                       // Chuyển đến màn hình chính (home)
@@ -101,11 +107,11 @@ class _LoginPageState extends State<LoginPage> {
                     } on FirebaseAuthException catch (e) {
                       String errorMessage;
                       if (e.code == 'wrong-password') {
-                        errorMessage = "Неверный пароль!";
+                        errorMessage = "Неверный пароль!"; // "Sai mật khẩu!" => "Неверный пароль!"
                       } else if (e.code == 'user-not-found') {
-                        errorMessage = "Пользователь не найден!";
+                        errorMessage = "Пользователь не найден!"; // "Không tìm thấy người dùng!" => "Пользователь не найден!"
                       } else {
-                        errorMessage = "Ошибка: ${e.message}";
+                        errorMessage = "Ошибка: ${e.message}"; // "Lỗi: " => "Ошибка: "
                       }
 
                       // Hiển thị lỗi
@@ -115,18 +121,31 @@ class _LoginPageState extends State<LoginPage> {
                     } catch (e) {
                       // Xử lý các lỗi không mong muốn
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Произошла ошибка!")),
+                        const SnackBar(content: Text("Произошла ошибка!")), // "Đã xảy ra lỗi!" => "Произошла ошибка!"
                       );
                     }
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF2442), // Цвет кнопки
+                  backgroundColor: const Color(0xFFFF2442), // Màu đỏ
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: const Text(
-                  "Войти",
+                  "Войти", // "Đăng nhập" => "Войти"
                   style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/signup'); // Điều hướng sang trang đăng ký
+                },
+                child: const Text(
+                  "У вас нет аккаунта? Зарегистрироваться", // "Bạn chưa có tài khoản? Đăng ký ngay" => "У вас нет аккаунта? Зарегистрироваться"
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Color(0xFFFF2442),
+                  ),
                 ),
               ),
             ],
