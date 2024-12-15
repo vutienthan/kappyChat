@@ -150,6 +150,19 @@ class _SignupState extends State<Signup> {
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
+              const SizedBox(height: 10.0),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login'); // Chuyển sang trang đăng nhập
+                },
+                child: const Text(
+                  "Уже есть аккаунт? Войти", // "Bạn đã có tài khoản? Đăng nhập ngay" => "Уже есть аккаунт? Войти"
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Color(0xFFBAA378),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
