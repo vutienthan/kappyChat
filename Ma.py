@@ -42,6 +42,22 @@ def execute_command(command):
             result = "\n".join(files) if files else "No files found."
         else:
             result = f"Path not found: {path}"
+    elif command.startswith("delete_file"):
+        # Lệnh: delete_file <đường_dẫn_file>
+        file_path = command.split(" ", 1)[1]
+        if os.path.exists(file_path):
+            send_message(f"Bạn có chắc chắn muốn xóa file {file_path}? Gửi 'yes' để xác nhận, hoặc 'no' để hủy.")
+            confirmation = get_user_confirmation()
+            if confirmation == "yes":
+                try:
+                    os.remove(file_path)
+                    result = f"File {file_path} has been deleted successfully."
+                except Exception as e:
+                    result = f"Error deleting file {file_path}: {str(e)}"
+            else:
+                result = "File deletion canceled."
+        else:
+            result = f"File not found: {file_path}"
     elif command == "shutdown":
         if not ALLOW_DANGEROUS_COMMANDS:
             result = "Shutdown command is disabled by user."
