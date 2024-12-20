@@ -16,14 +16,21 @@ def send_message(message):
     if response.status_code != 200:
         print(f"Error sending message: {response.text}")
 
-# Nhận cập nhật từ Telegram
-def get_updates(last_update_id=None):
+# Lấy cập nhật từ Telegram
+def get_updates(offset=None):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates"
-    params = {"offset": last_update_id + 1} if last_update_id else {}
+    params = {"offset": offset} if offset else {}
     response = requests.get(url, params=params).json()
     if "result" in response:
         return response["result"]
     return []
+
+# Xóa toàn bộ tin nhắn cũ
+def clear_updates():
+    updates = get_updates()
+    if updates:
+        last_update_id = updates[-1]["update_id"]
+        get_updates(offset=last_update_id + 1)
 
 # Xử lý lệnh từ Telegram
 def execute_command(command):
@@ -77,6 +84,9 @@ def get_user_confirmation():
 def start_bot():
     last_update_id = None
     send_message("Bot started. Send commands to control your computer.")
+
+    # Xóa toàn bộ tin nhắn cũ
+    clear_updates()
 
     while True:
         updates = get_updates(last_update_id)
