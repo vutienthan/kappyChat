@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  
+
                   // Поле ввода текста
                   Container(
                     padding: EdgeInsets.all(12),
@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  
+
                   // Выбор языка
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -201,11 +201,13 @@ class _HomePageState extends State<HomePage> {
                       elevation: 16,
                       style: TextStyle(color: Colors.black, fontSize: 16),
                       underline: Container(),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          selectedLanguage = newValue;
-                          _translateLanguage = languages[newValue] ?? 'en';
-                        });
+                      onChanged: (String? newValue) { // Chuyển kiểu thành String?
+                        if (newValue != null) { // Kiểm tra nếu giá trị không null
+                          setState(() {
+                            selectedLanguage = newValue;
+                            _translateLanguage = languages[newValue] ?? 'en';
+                          });
+                        }
                       },
                       items: languages.keys.map<DropdownMenuItem<String>>((String key) {
                         return DropdownMenuItem<String>(
@@ -216,13 +218,13 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  
+
                   // Кнопка перевода
                   ElevatedButton(
                     onPressed: translate,
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.blue.shade700,
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue.shade700,
                       padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -239,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 30),
-                  
+
                   // Вывод переведенного текста
                   Container(
                     width: double.infinity,
